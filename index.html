@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Furcation Planner</title>
+  <meta name="description" content="Pick your Furcation 2026 events, then export a calendar file and a printable plan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <p class="eyebrow">Furcation 2026 · 19–23 November</p>
+      <h1 id="page-title">Build your Furcation plan</h1>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Step 1: name -->
+    <section id="step-name" class="step" aria-labelledby="name-heading">
+      <div class="panel name-panel">
+        <h2 id="name-heading">First up, what's your name?</h2>
+        <p class="muted">We'll put it on your plan, e.g. “Tetra's Furcation Plans”.</p>
+        <form id="name-form" autocomplete="off">
+          <label for="name-input" class="sr-only">Your name</label>
+          <input id="name-input" name="name" type="text" maxlength="40" placeholder="Fursona name or real name" required>
+          <button type="submit" class="btn btn-primary">Let's go</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Step 2: pick events -->
+    <section id="step-pick" class="step" hidden aria-labelledby="pick-heading">
+      <div class="pick-head">
+        <div>
+          <h2 id="pick-heading">Pick your events</h2>
+          <p class="muted">Tick everything you want to go to. Clashes are flagged in red. <button type="button" id="change-name" class="link-btn">Change name</button></p>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Days" id="day-tabs"></div>
+      <div id="day-panels"></div>
+
+      <div class="action-bar" id="action-bar">
+        <div class="action-summary"><strong id="selected-count">0</strong> <span id="selected-label">events selected</span><span id="clash-note" class="clash-note" hidden></span></div>
+        <div class="action-buttons">
+          <button type="button" class="btn btn-ghost" id="clear-all">Clear</button>
+          <button type="button" class="btn btn-primary" id="to-export" disabled>Create my plan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: export -->
+    <section id="step-export" class="step" hidden aria-labelledby="export-heading">
+      <div class="pick-head">
+        <div>
+          <h2 id="export-heading">Your plan is ready</h2>
+          <p class="muted">Add it to your calendar, or save the poster as a PDF or PNG.</p>
+        </div>
+        <button type="button" class="btn btn-ghost" id="back-to-pick">← Edit events</button>
+      </div>
+
+      <div class="export-buttons">
+        <button type="button" class="btn btn-primary" id="dl-ics">Download calendar (.ics)</button>
+        <button type="button" class="btn btn-secondary" id="dl-pdf">Save as PDF</button>
+        <button type="button" class="btn btn-secondary" id="dl-png">Save as PNG</button>
+      </div>
+      <p class="muted small">The .ics file works with Apple Calendar, Google Calendar and Outlook. Each entry has the stage as its location.</p>
+
+      <div class="preview">
+        <canvas id="plan-canvas" aria-label="Preview of your weekend plan"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <p class="muted small">Unofficial planner. Always check the official Furcation schedule for the latest times. All times UK local time. Clubhouse hours: Thursday 21:00–00:00, Friday–Monday 10:00–00:00.</p>
+  </footer>
+
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
