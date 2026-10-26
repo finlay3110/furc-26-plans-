@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Regenerate js/events.js from the pretalx schedule export.
 
-Netlify runs this on every deploy (see netlify.toml), so the site always ships
-the schedule as it was at deploy time. If the download fails the build fails,
-and Netlify keeps the previous deploy live.
+Run it whenever the schedule changes, then commit js/events.js. If the
+download fails, js/events.js is left unchanged.
 
 Usage: python3 tools/fetch-schedule.py [url-or-local-file]
 """

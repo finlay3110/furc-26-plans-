@@ -14,19 +14,17 @@ Your name and picks are remembered in your browser.
 
 No build step is needed. Open `index.html` in a browser, or host the folder anywhere static.
 
-Hosted on Netlify (see `netlify.toml`): connect the repo in Netlify and it redeploys on every push to `main`. No build command is needed; the publish directory is the repo root.
-
 ## Updating the programme
 
 The schedule comes from pretalx: https://events.furcation.org.uk/furcation-2026/schedule/export/schedule.json
 
-Every Netlify deploy runs `python3 tools/fetch-schedule.py`, which downloads it and rewrites `js/events.js`. To publish schedule changes, trigger a redeploy in Netlify (or hit a Netlify build hook). If the download fails, the deploy fails and the previous version stays live.
+Run `python3 tools/fetch-schedule.py` to download it and rewrite `js/events.js`, then commit and publish. If the download fails, `js/events.js` is left unchanged.
 
 - Days and tabs come from the schedule's days.
 - Each pretalx track becomes a colour group. Tracks named like Furcation, Charity, Community, DJ or Registration use the logo palette; any other track uses the colour set in pretalx.
 - Anything with "setup" in its title is left out.
 
-To refresh locally: `python3 tools/fetch-schedule.py` (or pass a saved `schedule.json` path).
+You can also pass a saved `schedule.json` path instead of downloading.
 
 ## Files
 
