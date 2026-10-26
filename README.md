@@ -18,14 +18,18 @@ Hosted on Netlify (see `netlify.toml`): connect the repo in Netlify and it redep
 
 ## Updating the programme
 
-Edit `data/events.csv` (`type` is one of Furcation, Charity, Community, DJ, Registration — it sets the colour), then regenerate the embedded data:
+The schedule comes from pretalx: https://events.furcation.org.uk/furcation-2026/schedule/export/schedule.json
 
-```sh
-python3 tools/csv-to-js.py
-```
+Every Netlify deploy runs `python3 tools/fetch-schedule.py`, which downloads it and rewrites `js/events.js`. To publish schedule changes, trigger a redeploy in Netlify (or hit a Netlify build hook). If the download fails, the deploy fails and the previous version stays live.
+
+- Days and tabs come from the schedule's days.
+- Each pretalx track becomes a colour group. Tracks named like Furcation, Charity, Community, DJ or Registration use the logo palette; any other track uses the colour set in pretalx.
+- Anything with "setup" in its title is left out.
+
+To refresh locally: `python3 tools/fetch-schedule.py` (or pass a saved `schedule.json` path).
 
 ## Files
 
 - `index.html`, `css/style.css`, `js/app.js`: the site
-- `js/events.js`: generated from `data/events.csv`
+- `js/events.js`: generated from the pretalx schedule (committed so the site also works opened from disk)
 - `vendor/jspdf.umd.min.js`: [jsPDF](https://github.com/parallax/jsPDF) 4.2.1 (MIT), used for PDF export

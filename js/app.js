@@ -4,24 +4,26 @@
   var EVENTS = window.FURC_EVENTS || [];
   var STORAGE_KEY = "furcation-planner-2026";
 
-  var DAYS = [
-    { name: "Thursday", date: "2026-11-19", short: "19 NOV" },
-    { name: "Friday", date: "2026-11-20", short: "20 NOV" },
-    { name: "Saturday", date: "2026-11-21", short: "21 NOV" },
-    { name: "Sunday", date: "2026-11-22", short: "22 NOV" },
-    { name: "Monday", date: "2026-11-23", short: "23 NOV" }
-  ];
+  var DAYS = window.FURC_DAYS || [];
 
-  // Colour groups from the official schedule legend, keyed by the CSV "type" column. Order is legend order.
+  // Logo-palette colours for the schedule's known tracks (matched by name). Order is legend order.
   var CATEGORIES = {
-    Furcation: { label: "Furcation Events", color: "#d63864" },
-    Charity: { label: "Charity Events", color: "#efcb52" },
-    Community: { label: "Community Events", color: "#5bc2a5" },
-    DJ: { label: "DJ Session", color: "#6f8cd9" },
-    Registration: { label: "Registration", color: "#d4a574" }
+    Furcation: { label: "Furcation Events", color: "#d63864", match: /furcation/i },
+    Charity: { label: "Charity Events", color: "#efcb52", match: /charity/i },
+    Community: { label: "Community Events", color: "#5bc2a5", match: /community/i },
+    DJ: { label: "DJ Session", color: "#6f8cd9", match: /\bdj\b/i },
+    Registration: { label: "Registration", color: "#d4a574", match: /registration/i }
   };
+  var TRACK_COLORS = window.FURC_TRACK_COLORS || {};
 
-  function categoryOf(ev) { return CATEGORIES[ev.type] ? ev.type : "Furcation"; }
+  // Any other pretalx track gets its own group, in the colour set in pretalx.
+  function categoryOf(ev) {
+    var key = Object.keys(CATEGORIES).filter(function (k) { return CATEGORIES[k].match && CATEGORIES[k].match.test(ev.type); })[0];
+    if (key) return key;
+    key = ev.type || "Other";
+    if (!CATEGORIES[key]) CATEGORIES[key] = { label: key, color: TRACK_COLORS[key] || "#8e8e9e" };
+    return key;
+  }
 
   // Times are UK local; compare them as floating wall-clock values.
   function stamp(date, time) { return Date.parse(date + "T" + time + ":00Z"); }
@@ -96,6 +98,7 @@
   function renderTabs() {
     var tabs = $("day-tabs");
     tabs.innerHTML = "";
+    tabs.style.setProperty("--days", DAYS.length);
     var chosen = selectedEvents();
     DAYS.forEach(function (d) {
       var count = chosen.filter(function (ev) { return ev.day === d.name; }).length;
@@ -105,7 +108,7 @@
       }, [
         el("span", { class: "tab-day", text: d.name }),
         el("span", { class: "tab-meta" }, [
-          document.createTextNode(d.short.replace(" NOV", " Nov")),
+          document.createTextNode(d.short.slice(0, -2) + d.short.slice(-2).toLowerCase()),
           el("span", { class: "tab-count", text: String(count), "aria-label": count + " selected" })
         ])
       ]);

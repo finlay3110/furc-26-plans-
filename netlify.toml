@@ -1,4 +1,4 @@
-# Static site: no build step, serve the repo root.
+# Static site. Each deploy pulls the latest schedule from pretalx into js/events.js.
 [build]
   publish = "."
-  command = ""
+  command = "python3 tools/fetch-schedule.py"
