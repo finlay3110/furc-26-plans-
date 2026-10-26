@@ -14,11 +14,11 @@
 
   // Colour groups from the official schedule legend, keyed by the CSV "type" column. Order is legend order.
   var CATEGORIES = {
-    Furcation: { label: "Furcation Events", color: "#9b6bd6" },
-    Charity: { label: "Charity Events", color: "#c49be0" },
-    Community: { label: "Community Events", color: "#3dbbec" },
-    DJ: { label: "DJ Session", color: "#f06aa8" },
-    Registration: { label: "Registration", color: "#f9d200" }
+    Furcation: { label: "Furcation Events", color: "#d63864" },
+    Charity: { label: "Charity Events", color: "#efcb52" },
+    Community: { label: "Community Events", color: "#5bc2a5" },
+    DJ: { label: "DJ Session", color: "#6f8cd9" },
+    Registration: { label: "Registration", color: "#d4a574" }
   };
 
   function categoryOf(ev) { return CATEGORIES[ev.type] ? ev.type : "Furcation"; }
@@ -233,7 +233,7 @@
     selectedEvents().forEach(function (ev) {
       var desc = [CATEGORIES[ev.cat].label];
       if (ev.notes) desc.push(ev.notes);
-      desc.push("", "Furcation 2026");
+      desc.push("", "Furcation 2026 · John Fowler's, Sandy Glade Holiday Park", "https://furcation.org.uk");
       lines.push(
         "BEGIN:VEVENT",
         "UID:furc2026-" + icsDate(ev.startDate, ev.startTime) + "-" + slug(ev.name + " " + ev.venue) + "@furcation-planner",
@@ -266,8 +266,9 @@
   // ---------- Poster (canvas) ----------
   var P = {
     W: 2400, minH: 1414, margin: 62, gutter: 24,
-    bg: "#141729", column: "#1d2140", yellow: "#ffc83d", ink: "#1a1a2e",
-    cardText: "#1a1a2e", cardMuted: "#6b6f86", white: "#ffffff", muted: "#7c82a8",
+    bg: "#0a0a0c", column: "#17171c", accent: "#d63864",
+    stripe: ["#d63864", "#4f6db8", "#5bc2a5", "#efcb52"],
+    cardText: "#16161a", cardMuted: "#62626e", white: "#ffffff", muted: "#8e8e9e",
     font: '"Inter", "Helvetica Neue", Arial, sans-serif'
   };
 
@@ -323,7 +324,7 @@
     ctx.textAlign = "left";
 
     // time
-    ctx.font = font(700, 20); ctx.fillStyle = color;
+    ctx.font = font(700, 20); ctx.fillStyle = P.cardText;
     ctx.fillText(timeRange(ev), tx, ty + 10);
 
     // name
@@ -372,16 +373,18 @@
     var size = 80;
     ctx.font = font(900, size);
     while (ctx.measureText(title).width > W - 2 * m && size > 36) { size -= 2; ctx.font = font(900, size); }
-    ctx.fillStyle = P.yellow; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-    ctx.fillText(title, m, 118);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = P.accent; ctx.fillText(title, m + 4, 122);
+    ctx.fillStyle = P.white; ctx.fillText(title, m, 118);
 
     ctx.font = font(400, 26); ctx.fillStyle = P.white;
-    ctx.fillText("Furcation 2026   |   Thursday 19 to Monday 23 November", m, 162);
+    ctx.fillText("Furcation 2026: Press Start!   |   John Fowler's, Sandy Glade Holiday Park   |   19 to 23 November", m, 162);
     ctx.font = font(400, 19); ctx.fillStyle = P.muted; ctx.textAlign = "right";
     ctx.fillText("All times UK local time", W - m, 162);
     ctx.textAlign = "left";
 
-    ctx.fillStyle = P.yellow; ctx.fillRect(m, 183, W - 2 * m, 3);
+    var seg = (W - 2 * m) / P.stripe.length;
+    P.stripe.forEach(function (c, i) { ctx.fillStyle = c; ctx.fillRect(m + i * seg, 182, seg, 5); });
 
     // columns
     var colBottom = H - footerH;
@@ -389,10 +392,10 @@
       var x = m + i * (colW + P.gutter);
       ctx.fillStyle = P.column;
       roundRect(ctx, x, colTop, colW, colBottom - colTop, allR(16)); ctx.fill();
-      ctx.fillStyle = P.yellow;
+      ctx.fillStyle = P.accent;
       roundRect(ctx, x, colTop, colW, headH, { tl: 16, tr: 16, br: 0, bl: 0 }); ctx.fill();
 
-      ctx.fillStyle = P.ink;
+      ctx.fillStyle = P.white;
       ctx.font = font(800, 31); ctx.textAlign = "left";
       ctx.fillText(col.day.name.toUpperCase(), x + 24, colTop + 52);
       ctx.font = font(800, 23); ctx.textAlign = "right";
