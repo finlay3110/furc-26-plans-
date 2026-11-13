@@ -32,7 +32,7 @@ def duration(s):
 
 def convert(data):
     conf = data["schedule"]["conference"]
-    days, events, colors = [], [], {}
+    days, events, colors, seen = [], [], {}, {}
     for t in conf.get("tracks") or []:
         if t.get("color"):
             colors[t["name"]] = t["color"]
@@ -46,6 +46,13 @@ def convert(data):
                 # "date" is ISO with the event's own UTC offset, so its wall clock is local time.
                 start = datetime.fromisoformat(t["date"]).replace(tzinfo=None)
                 end = start + duration(t["duration"])
+                room_name = t.get("room") or room
+                # The same event in several rooms at once (ceremony relays, Dealers Den) becomes one entry.
+                same = seen.get((t["title"].strip(), start, end))
+                if same:
+                    same["venue"] += " & " + room_name
+                    continue
+                kind = t.get("track") or t.get("type") or ""
                 events.append({
                     "id": t.get("code") or t.get("guid") or str(t["id"]),
                     "day": days[-1]["name"],
@@ -54,10 +61,11 @@ def convert(data):
                     "endDate": end.strftime("%Y-%m-%d"),
                     "endTime": end.strftime("%H:%M"),
                     "name": t["title"].strip(),
-                    "venue": t.get("room") or room,
-                    "type": t.get("track") or "",
+                    "venue": room_name,
+                    "type": "" if kind == "Undefined" else kind,
                     "notes": "",
                 })
+                seen[(t["title"].strip(), start, end)] = events[-1]
     if not events:
         sys.exit("No events found in the schedule export; refusing to publish an empty planner.")
     days = [d for d in days if any(e["day"] == d["name"] for e in events)]

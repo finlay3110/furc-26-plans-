@@ -6,22 +6,25 @@
 
   var DAYS = window.FURC_DAYS || [];
 
-  // Logo-palette colours for the schedule's known tracks (matched by name). Order is legend order.
-  var CATEGORIES = {
-    Furcation: { label: "Furcation Events", color: "#d63864", match: /furcation/i },
-    Charity: { label: "Charity Events", color: "#efcb52", match: /charity/i },
-    Community: { label: "Community Events", color: "#5bc2a5", match: /community/i },
-    DJ: { label: "DJ Session", color: "#6f8cd9", match: /\bdj\b/i },
-    Registration: { label: "Registration", color: "#d4a574", match: /registration/i }
+  // One colour group per pretalx track (or session type when there are no tracks),
+  // coloured mostly from the Furcation logo palette.
+  // Fixed colours for the session types pretalx uses today, so each stays distinct;
+  // track colours set in pretalx win, and any new type takes the next free palette colour.
+  var TYPE_COLORS = {
+    "Ceremonies": "#d63864", "DJs": "#6f8cd9", "Charity": "#efcb52", "Games": "#5bc2a5",
+    "Meet and Greets": "#b8d83a", "Dealers' Den": "#d4a574", "Shows": "#a77bd6",
+    "Panels": "#f08a4b", "Photography": "#e8e4dc", "General": "#8e8e9e"
   };
+  var PALETTE = ["#6fa3e8", "#e2527c", "#c5dbf4", "#9fd0b8"];
   var TRACK_COLORS = window.FURC_TRACK_COLORS || {};
+  var CATEGORIES = {};
 
-  // Any other pretalx track gets its own group, in the colour set in pretalx.
   function categoryOf(ev) {
-    var key = Object.keys(CATEGORIES).filter(function (k) { return CATEGORIES[k].match && CATEGORIES[k].match.test(ev.type); })[0];
-    if (key) return key;
-    key = ev.type || "Other";
-    if (!CATEGORIES[key]) CATEGORIES[key] = { label: key, color: TRACK_COLORS[key] || "#8e8e9e" };
+    var key = ev.type || "General";
+    if (!CATEGORIES[key]) {
+      var n = Object.keys(CATEGORIES).filter(function (k) { return !TYPE_COLORS[k]; }).length;
+      CATEGORIES[key] = { label: key, color: TRACK_COLORS[key] || TYPE_COLORS[key] || PALETTE[n % PALETTE.length] };
+    }
     return key;
   }
 
@@ -30,9 +33,9 @@
   EVENTS.forEach(function (ev) {
     ev.start = stamp(ev.startDate, ev.startTime);
     ev.end = stamp(ev.endDate, ev.endTime);
-    ev.cat = categoryOf(ev);
   });
   EVENTS.sort(function (a, b) { return a.start - b.start || a.end - b.end || a.name.localeCompare(b.name); });
+  EVENTS.forEach(function (ev) { ev.cat = categoryOf(ev); });
 
   var byId = {};
   EVENTS.forEach(function (ev) { byId[ev.id] = ev; });

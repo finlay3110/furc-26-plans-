@@ -21,7 +21,8 @@ The schedule comes from pretalx: https://events.furcation.org.uk/furcation-2026/
 Run `python3 tools/fetch-schedule.py` to download it and rewrite `js/events.js`, then commit and publish. If the download fails, `js/events.js` is left unchanged.
 
 - Days and tabs come from the schedule's days.
-- Each pretalx track becomes a colour group. Tracks named like Furcation, Charity, Community, DJ or Registration use the logo palette; any other track uses the colour set in pretalx.
+- Events are coloured by pretalx track, or by session type (Games, DJs, Charity, …) when no tracks are set. Colours for today's types are fixed in `js/app.js` (`TYPE_COLORS`); a track colour set in pretalx overrides them.
+- The same event in several rooms at the same time (e.g. ceremony relays) is shown once, with both rooms.
 - Anything with "setup" in its title is left out.
 
 You can also pass a saved `schedule.json` path instead of downloading.
